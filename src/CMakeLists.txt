@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(libhasherkawpow)
+project(hasherkawpow)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
@@ -20,7 +20,7 @@ include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})
 # include static libraries
 add_library(${PROJECT_NAME} STATIC ${hasher_kawpow_SRC} "libhasherkawpow.cc")
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".lib")
+#set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".lib")
 
 
 #ff building Node JS Addon

@@ -3,8 +3,8 @@ use cmake::{self, Config};
 fn main() {
 
     let dst = 
-        Config::new("src/src")
-            .build_target("libhasherkawpow")
+        Config::new("src")
+            .build_target("hasherkawpow")
             .very_verbose(true)
             .always_configure(false)
             .build();
@@ -18,17 +18,8 @@ fn main() {
         println!("cargo:rustc-link-search=all={}/build/Debug", dst.display());
         println!("cargo:rustc-link-lib=static=libhasherkawpow");
     } else if toolchain_environment == "" {
-        println!("cargo:rustc-link-search=all={}/build/CMakeFiles/libhasherkawpow.dir/", dst.display());
-        println!("cargo:rustc-link-lib=static=libhasherkawpow.cc.o");
-        println!("cargo:rustc-link-lib=static=uint256.cpp.o");
-        println!("cargo:rustc-link-search=all={}/build/CMakeFiles/libhasherkawpow.dir/ethash", dst.display());
-        println!("cargo:rustc-link-lib=static=ethash.cpp.o");
-        println!("cargo:rustc-link-lib=static=managed.cpp.o");
-        println!("cargo:rustc-link-lib=static=primes.c.o");
-        println!("cargo:rustc-link-lib=static=progpow.cpp.o");
-        println!("cargo:rustc-link-search=all={}/build/CMakeFiles/libhasherkawpow.dir/keccak", dst.display());
-        println!("cargo:rustc-link-lib=static=keccak.c.o");
-        println!("cargo:rustc-link-lib=static=keccakf800.c.o");
-        println!("cargo:rustc-link-lib=static=keccakf1600.c.o");
+        println!("cargo:rustc-link-lib=dylib=c++"); // link to the C++ standard library
+        println!("cargo:rustc-link-search=native={}/build", dst.display());
+        println!("cargo:rustc-link-lib=static=hasherkawpow");
     }
 }
