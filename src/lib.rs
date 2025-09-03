@@ -1,5 +1,5 @@
 unsafe extern "C" {
-    fn hash_one (
+    fn hash_one(
         header_hash_bytes: *const u8,
         nonce64_ptr: *const u64,
         block_height: i32,
@@ -7,13 +7,13 @@ unsafe extern "C" {
         hash_out_bytes: *const u8,
     );
 
-    fn verify (
+    fn verify(
         header_hash_bytes: *const u8,
         nonce64_ptr: *const u64,
         block_height: i32,
         mix_out_bytes: *const u8,
         hash_out_bytes: *const u8,
-    ) -> bool; 
+    ) -> bool;
 }
 
 pub fn hash_kawpow(header_hash: &[u8; 32], nonce: &u64, block_height: i32) -> (Vec<u8>, Vec<u8>) {
@@ -32,22 +32,21 @@ pub fn hash_kawpow(header_hash: &[u8; 32], nonce: &u64, block_height: i32) -> (V
 }
 
 pub fn verify_kawpow(
-    header_hash: &[u8; 32], 
-    nonce: &u64, 
-    block_height: i32, 
+    header_hash: &[u8; 32],
+    nonce: &u64,
+    block_height: i32,
     mix_out: &[u8; 32],
-    hash_out: &[u8; 32]
+    hash_out: &[u8; 32],
 ) -> bool {
-
     let valid;
     unsafe {
-        valid = verify (
+        valid = verify(
             header_hash.as_ptr(),
             nonce,
             block_height,
             mix_out.as_ptr(),
             hash_out.as_ptr(),
-        ); 
+        );
     }
 
     valid
@@ -63,7 +62,8 @@ mod tests {
         let mut bytes = Vec::with_capacity(hexstr.len() / 2);
         let chars: Vec<_> = hexstr.chars().collect();
         for i in (0..hexstr.len()).step_by(2) {
-            let byte = u8::from_str_radix(&format!("{}{}", chars[i], chars[i+1]), 16).expect("valid hex");
+            let byte = u8::from_str_radix(&format!("{}{}", chars[i], chars[i + 1]), 16)
+                .expect("valid hex");
             bytes.push(byte);
         }
         bytes
@@ -80,12 +80,16 @@ mod tests {
 
     // Helper to convert Vec<u8> to hex string
     fn bytes_to_hex(bytes: &[u8]) -> String {
-        bytes.iter().map(|b| format!("{:02x}", b)).collect::<String>()
+        bytes
+            .iter()
+            .map(|b| format!("{:02x}", b))
+            .collect::<String>()
     }
 
     #[test]
     fn test_hash_kawpow_matches_expected() {
-        let header_hash = hex_to_bytes("63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3");
+        let header_hash =
+            hex_to_bytes("63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3");
         let nonce = hex_to_le_u64("88a23b0033eb959b");
         let block_height = 262523i32;
         let expected_mix_hash = "89732e5ff8711c32558a308fc4b8ee77416038a70995670e3eb84cbdead2e337";
@@ -108,7 +112,8 @@ mod tests {
 
     #[test]
     fn test_verify_kawpow_matches_expected() {
-        let header_hash = hex_to_bytes("63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3");
+        let header_hash =
+            hex_to_bytes("63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3");
         let nonce = hex_to_le_u64("88a23b0033eb959b");
         let block_height = 262523i32;
         let expected_hash = "0000000718ba5143286c46f44eee668fdf59b8eba810df21e4e2f4ec9538fc20";
@@ -120,12 +125,17 @@ mod tests {
 
         let valid = verify_kawpow(&header_hash_arr, &nonce, block_height, &mix_arr, &hash_arr);
         assert!(valid, "Verification failed");
-        assert_eq!(bytes_to_hex(&hash_arr), expected_hash, "Verified hash output does not match original hash");
+        assert_eq!(
+            bytes_to_hex(&hash_arr),
+            expected_hash,
+            "Verified hash output does not match original hash"
+        );
     }
 
     #[test]
     fn test_verify_kawpow_benchmark() {
-        let header_hash = hex_to_bytes("63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3");
+        let header_hash =
+            hex_to_bytes("63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3");
         let nonce = hex_to_le_u64("88a23b0033eb959b");
         let block_height = 262523i32;
 
