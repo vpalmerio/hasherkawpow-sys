@@ -16,9 +16,9 @@ unsafe extern "C" {
     ) -> bool;
 }
 
-pub fn hash_kawpow(header_hash: &[u8; 32], nonce: &u64, block_height: i32) -> (Vec<u8>, Vec<u8>) {
-    let mut mix_out = vec![0u8; 32];
-    let mut hash_out = vec![0u8; 32];
+pub fn hash_kawpow(header_hash: &[u8; 32], nonce: &u64, block_height: i32) -> ([u8; 32], [u8; 32]) {
+    let mut mix_out = [0u8; 32];
+    let mut hash_out = [0u8; 32];
     unsafe {
         hash_one(
             header_hash.as_ptr(),
@@ -120,13 +120,11 @@ mod tests {
 
         let header_hash_arr: [u8; 32] = header_hash.try_into().unwrap();
         let (mix, hash) = hash_kawpow(&header_hash_arr, &nonce, block_height);
-        let mix_arr: [u8; 32] = mix.try_into().unwrap();
-        let hash_arr: [u8; 32] = hash.try_into().unwrap();
 
-        let valid = verify_kawpow(&header_hash_arr, &nonce, block_height, &mix_arr, &hash_arr);
+        let valid = verify_kawpow(&header_hash_arr, &nonce, block_height, &mix, &hash);
         assert!(valid, "Verification failed");
         assert_eq!(
-            bytes_to_hex(&hash_arr),
+            bytes_to_hex(&hash),
             expected_hash,
             "Verified hash output does not match original hash"
         );
@@ -139,12 +137,11 @@ mod tests {
         let nonce = hex_to_le_u64("88a23b0033eb959b");
         let block_height = 262523i32;
 
-        let header_hash_arr: [u8; 32] = header_hash.clone().try_into().unwrap();
-        let (_mix, _hash) = hash_kawpow(&header_hash_arr, &nonce, block_height);
-        let iterations = 1000;
-        let mix = hash_kawpow(&header_hash_arr, &nonce, block_height).0;
-        let mix: [u8; 32] = mix.try_into().unwrap();
+        let header_hash_arr: [u8; 32] = header_hash.try_into().unwrap();
+        let (mix, _hash) = hash_kawpow(&header_hash_arr, &nonce, block_height);
         let hash_out_arr: [u8; 32] = [0u8; 32];
+
+        let iterations = 1000;
         let start = Instant::now();
         for _ in 0..iterations {
             let valid = verify_kawpow(&header_hash_arr, &nonce, block_height, &mix, &hash_out_arr);
