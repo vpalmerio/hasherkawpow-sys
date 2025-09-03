@@ -11,6 +11,7 @@
 #include <include/keccak.hpp>
 
 #include <array>
+#include <cassert>
 
 namespace progpow
 {
@@ -181,7 +182,12 @@ void round(
 {
     const uint32_t num_items = static_cast<uint32_t>(context.full_dataset_num_items / 2);
     const uint32_t item_index = mix[r % num_lanes][0] % num_items;
+
+    // If the second assert statement fails, then `context` is likely a null pointer, and you most likely ran `cargo test`
+    // You need to run `cargo test -- --test-threads=1` to make the tests work every time
+    assert(context.l1_cache != 0);
     const hash2048 item = lookup(context, item_index);
+    assert(context.l1_cache != 0 && "context is a null pointer, did you run `cargo test`? If so, run `cargo test -- --test-threads=1`");
 
     constexpr size_t num_words_per_lane = sizeof(item) / (sizeof(uint32_t) * num_lanes);
     constexpr int max_operations =
@@ -199,6 +205,7 @@ void round(
             for (size_t l = 0; l < num_lanes; ++l)
             {
                 const size_t offset = mix[l][src] % l1_cache_num_items;
+                assert(context.l1_cache != 0);
                 random_merge(mix[l][dst], le::uint32(context.l1_cache[offset]), sel);
             }
         }
