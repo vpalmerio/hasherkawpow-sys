@@ -16,6 +16,37 @@ unsafe extern "C" {
     ) -> bool;
 }
 
+/// Computes a KawPow hash.
+///
+/// # Arguments
+///
+/// * `header_hash` - The 32-byte header hash of the block.
+/// * `nonce` - The nonce used for the hash.
+/// * `block_height` - The block height at which the hash is being computed.
+///
+/// # Returns
+///
+/// A tuple `(mix_out, hash_out)`:
+/// - `mix_out`: A 32-byte array representing the mix digest.
+/// - `hash_out`: A 32-byte array representing the final KawPow hash.
+///
+/// # Safety
+///
+/// Internally this calls into an `unsafe` FFI function (`hash_one`).
+///
+/// # Examples
+///
+/// ```
+/// use hasherkawpow_sys::hash_kawpow;
+///
+/// let header_hash = [0u8; 32];
+/// let nonce: u64 = 42;
+/// let block_height = 100;
+///
+/// let (mix, hash) = hash_kawpow(&header_hash, &nonce, block_height);
+/// assert_eq!(mix.len(), 32);
+/// assert_eq!(hash.len(), 32);
+/// ```
 pub fn hash_kawpow(header_hash: &[u8; 32], nonce: &u64, block_height: i32) -> ([u8; 32], [u8; 32]) {
     let mut mix_out = [0u8; 32];
     let mut hash_out = [0u8; 32];
@@ -31,6 +62,41 @@ pub fn hash_kawpow(header_hash: &[u8; 32], nonce: &u64, block_height: i32) -> ([
     (mix_out, hash_out)
 }
 
+/// Verifies a KawPow hash result.
+///
+/// # Arguments
+///
+/// * `header_hash` - The 32-byte header hash of the block.
+/// * `nonce` - The nonce used for the hash.
+/// * `block_height` - The block height at which the hash is being verified.
+/// * `mix_out` - The 32-byte mix digest that was computed.
+/// * `hash_out` - The 32-byte final KawPow hash that was computed.
+///
+/// # Returns
+///
+/// `true` if the provided `mix_out` and `hash_out` are valid for the given
+/// inputs, otherwise `false`.
+///
+/// # Safety
+///
+/// Internally this calls into an `unsafe` FFI function (`verify`).
+///
+/// # Examples
+///
+/// ```
+/// use hasherkawpow_sys::{hash_kawpow, verify_kawpow};
+///
+/// let header_hash = [0u8; 32];
+/// let nonce: u64 = 42;
+/// let block_height = 100;
+///
+/// // Compute a hash
+/// let (mix, hash) = hash_kawpow(&header_hash, &nonce, block_height);
+///
+/// // Verify the hash
+/// let is_valid = verify_kawpow(&header_hash, &nonce, block_height, &mix, &hash);
+/// assert!(is_valid);
+/// ```
 pub fn verify_kawpow(
     header_hash: &[u8; 32],
     nonce: &u64,
