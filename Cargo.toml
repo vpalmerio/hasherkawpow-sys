@@ -2,6 +2,13 @@
 name = "hasherkawpow-sys"
 version = "0.1.0"
 edition = "2024"
+description = "Low-level Rust bindings for KawPow hashing and verification."
+homepage = "https://github.com/vpalmerio/hasherkawpow-sys"
+repository = "https://github.com/vpalmerio/hasherkawpow-sys"
+readme = "README.md"
+keywords = ["kawpow", "ravencoin", "progpow", "hash", "pow"]
+categories = ["external-ffi-bindings", "cryptography::cryptocurrencies"]
+license = "MIT"
 
 [build-dependencies]
 cmake = "0.1"

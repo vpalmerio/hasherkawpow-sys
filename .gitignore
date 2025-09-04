@@ -28,4 +28,5 @@ target
 # cmake build files
 src/CMakeFiles/
 
+# Ignore Visual Studio Code files
 .DS_Store
