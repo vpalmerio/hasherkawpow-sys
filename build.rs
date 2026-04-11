@@ -10,6 +10,7 @@ fn main() {
     let toolchain_environment = std::env::var("CARGO_CFG_TARGET_ENV").unwrap();
 
     if toolchain_environment == "gnu" {
+        println!("cargo:rustc-link-lib=stdc++"); // link to the C++ standard library
         println!("cargo:rustc-link-search=all={}/build", dst.display());
         println!("cargo:rustc-link-lib=static=hasherkawpow");
     } else if toolchain_environment == "msvc" {
