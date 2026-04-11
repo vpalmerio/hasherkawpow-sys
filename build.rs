@@ -14,8 +14,18 @@ fn main() {
         println!("cargo:rustc-link-search=all={}/build", dst.display());
         println!("cargo:rustc-link-lib=static=hasherkawpow");
     } else if toolchain_environment == "msvc" {
-        println!("cargo:rustc-link-search=all={}/build/Debug", dst.display());
-        println!("cargo:rustc-link-lib=static=libhasherkawpow");
+        let profile = std::env::var("PROFILE").unwrap_or("debug".to_string());
+        let config = if profile == "release" {
+            "Release"
+        } else {
+            "Debug"
+        };
+        println!(
+            "cargo:rustc-link-search=all={}/build/{}",
+            dst.display(),
+            config
+        );
+        println!("cargo:rustc-link-lib=static=hasherkawpow");
     } else if toolchain_environment.is_empty() {
         println!("cargo:rustc-link-lib=dylib=c++"); // link to the C++ standard library
         println!("cargo:rustc-link-search=native={}/build", dst.display());
